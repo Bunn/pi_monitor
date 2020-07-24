@@ -3,7 +3,7 @@ Description=Pi Monitor
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 -u /usr/local/bin/pi_monitor.py
+ExecStart=/usr/bin/python3 -u /usr/local/bin/pi-monitor.py
 Restart=always
 User=pi
 
