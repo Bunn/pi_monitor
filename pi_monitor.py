@@ -28,11 +28,11 @@ def get_kernel_release():
 
 def get_monitor_json():
 	data = {
-				"soc_temperature": get_soc_temperature(),
-				"uptime": get_uptime(),
-				"load_average": get_load_average(),
-				"kernel_release": get_kernel_release()
-			}
+		"soc_temperature": get_soc_temperature(),
+		"uptime": get_uptime(),
+		"load_average": get_load_average(),
+		"kernel_release": get_kernel_release()
+		}
 	json_value = json.dumps(data)
 	return json_value
 
