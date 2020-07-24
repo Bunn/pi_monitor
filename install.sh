@@ -14,4 +14,5 @@ mv pi-monitor.service /etc/systemd/system/
 echo ""
 echo "Starting pi-monitor service..."
 echo ""
+systemctl daemon-reload
 systemctl start pi-monitor.service
