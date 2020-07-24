@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Downloading files..."
-wget https://raw.githubusercontent.com/Bunn/pi_monitor/master/pi_monitor.py
+wget https://raw.githubusercontent.com/Bunn/pi_monitor/master/pi-monitor.py
 wget https://raw.githubusercontent.com/Bunn/pi_monitor/master/pi-monitor.service
 
 echo "Moving files..."
