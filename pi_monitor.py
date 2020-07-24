@@ -33,7 +33,6 @@ def get_monitor_json():
 		"load_average": get_load_average(),
 		"kernel_release": get_kernel_release()
 		}
-	json_value = json.dumps(data)
-	return json_value
+	return json.dumps(data)
 
 print(get_monitor_json())
