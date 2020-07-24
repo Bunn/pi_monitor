@@ -1,0 +1,11 @@
+[Unit]
+Description=Pi Monitor
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 -u /usr/local/bin/pi_monitor.py
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
