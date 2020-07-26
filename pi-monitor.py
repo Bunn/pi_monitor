@@ -32,12 +32,34 @@ class Monitor:
     def get_kernel_release(self):
         return subprocess.check_output("uname -r", shell=True).decode("utf8").strip()
 
+
+     #returns total, free and available memory in kB
+    def get_memory_usage(self):
+        meminfo = subprocess.check_output("cat /proc/meminfo", shell=True).decode("utf8").strip()        
+        memory_usage = meminfo.split("\n")
+
+        total_memory = [x for x in memory_usage if 'MemTotal' in x][0]
+        free_memory = [x for x in memory_usage if 'MemFree' in x][0]
+        available_memory = [x for x in memory_usage if 'MemAvailable' in x][0]
+
+        total_memory = re.findall(r'\d+', total_memory)[0]
+        free_memory = re.findall(r'\d+', free_memory)[0]
+        available_memory = re.findall(r'\d+', available_memory)[0]
+
+        data = {
+            "total_memory": total_memory,
+            "free_memory": free_memory,
+            "available_memory": available_memory
+        }
+        return data
+
     def get_json(self):
         data = {
             "soc_temperature": self.get_soc_temperature(),
             "uptime": self.get_uptime(),
             "load_average": self.get_load_average(),
-            "kernel_release": self.get_kernel_release()
+            "kernel_release": self.get_kernel_release(),
+            "memory": self.get_memory_usage()
         }
         return json.dumps(data)
 
