@@ -47,9 +47,9 @@ class Monitor:
         available_memory = re.findall(r'\d+', available_memory)[0]
 
         data = {
-            "total_memory": total_memory,
-            "free_memory": free_memory,
-            "available_memory": available_memory
+            "total_memory": int(total_memory),
+            "free_memory": int(free_memory),
+            "available_memory": int(available_memory)
         }
         return data
 
