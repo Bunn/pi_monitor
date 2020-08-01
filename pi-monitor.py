@@ -2,6 +2,7 @@ import subprocess
 import re
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import sys
 
 
 class Monitor:
@@ -80,6 +81,10 @@ class MonitorServer(BaseHTTPRequestHandler):
 
 
 port = 8088
+port_argument = sys.argv[-1]
+if port_argument.isdigit():
+    port = int(port_argument)
+
 server_address = ('', port)
 httpd = HTTPServer(server_address, MonitorServer)
 httpd.serve_forever()
