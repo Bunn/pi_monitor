@@ -2,7 +2,7 @@
 
 Python utility to get Raspberry Pi metrics. This is an experimental utility, use at your own risk :)
 
-This is just a very simple Python script using a http server to provide some Raspberry Pi metrics via REST calls, like temperature, load averate and more.
+This is just a very simple Python script using a http server to provide some Raspberry Pi metrics via REST calls, like temperature, load average and more.
 
 ## Usage
 
@@ -53,4 +53,4 @@ If you're running it manually you can just change the default port by sending it
 
 ## Compatibility
 
-This was tested on Rasperri Pi OS (32 bit), kernel 5.4.51-v7+
+This was tested on Raspberry Pi OS (32 bit), kernel 5.4.51-v7+
