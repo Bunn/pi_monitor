@@ -56,6 +56,7 @@ class Monitor:
 
     def get_json(self):
         data = {
+            "thermal_temperature": self.get_thermal_temperature(),
             "soc_temperature": self.get_soc_temperature(),
             "uptime": self.get_uptime(),
             "load_average": self.get_load_average(),
