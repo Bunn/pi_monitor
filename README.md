@@ -1,17 +1,21 @@
 # Pi Monitor
 
-Python utility to get Raspberry Pi metrics. This is an experimental utility, use at your own risk :)
+Pi Monitor is a Python utility designed to provide various metrics from a Raspberry Pi. This experimental tool offers a simple HTTP server that delivers Raspberry Pi metrics via RESTful API calls, including temperature, load average, and more. Use it at your own risk.
 
-This is just a very simple Python script using a http server to provide some Raspberry Pi metrics via REST calls, like temperature, load average and more.
+## Features
+
+- Provides metrics such as SoC temperature, GPU temperature, uptime, load average, kernel release, memory usage, CPU usage, disk usage, and network statistics.
+- Runs a simple HTTP server to serve these metrics in JSON format.
 
 ## Usage
 
-The server will make a single endpoint available on the default port `8088`:
-`http://YOUR_IP:8088/monitor.json` that will return a JSON like this:
+The server exposes a single endpoint on the default port `8088`:
+- Access it via `http://YOUR_IP:8088/monitor.json` to receive a JSON response with the following structure:
 
 ```json
 {
   "soc_temperature": 50.5,
+  "gpu_temperature": 50.5,
   "uptime": 18551.34,
   "load_average": [0.0, 0.2, 0.1],
   "kernel_release": "5.4.51-v7+",
@@ -19,38 +23,73 @@ The server will make a single endpoint available on the default port `8088`:
     "total_memory": 441416,
     "free_memory": 90536,
     "available_memory": 279512
+  },
+  "cpu_usage": 15.0,
+  "disk_usage": {
+    "total": 1000000000,
+    "used": 500000000,
+    "free": 500000000,
+    "percent": 50.0
+  },
+  "network_stats": {
+    "bytes_sent": 123456,
+    "bytes_recv": 654321,
+    "packets_sent": 1234,
+    "packets_recv": 4321
   }
 }
 ```
 
 ## Installation
 
-### Automatic
+### Automatic Installation
 
-`wget -O - https://raw.githubusercontent.com/Bunn/pi_monitor/master/install.sh | sudo bash`
+To install Pi Monitor automatically, run the following command:
 
-### Manual
+```bash
+wget -O - https://raw.githubusercontent.com/Bunn/pi_monitor/master/install.sh | sudo bash
+```
 
-You can download the files manually and run it the way you like. If you don't want Pi Monitor to run as a service you can just run as `python3 pi_monitor.py`
+### Manual Installation
+
+For manual installation, download the necessary files and execute the script as desired. If you prefer not to run Pi Monitor as a service, you can execute it directly using:
+
+```bash
+python3 pi_monitor.py
+```
 
 ## Configuration
 
-If you're running it using the automatic installation you can change the username and default port in which Pi Monitor is running by changing the following settings on your `pi-monitor.service`
+### Service Configuration
 
-```
+If you installed Pi Monitor using the automatic method, you can modify the username and default port by editing the `pi-monitor.service` file:
+
+```ini
 [Service]
 ExecStart=/usr/bin/python3 -u /usr/local/bin/pi-monitor.py 8088
 User=pi
 ```
 
-Before doing so, make sure to stop the service with
-`sudo systemctl stop pi-monitor.service`
-and then start it again after your changes with
-`sudo systemctl start pi-monitor.service`
+To apply changes, stop the service with:
 
-If you're running it manually you can just change the default port by sending it as a parameter like:
-`python3 pi_monitor.py 8181`
+```bash
+sudo systemctl stop pi-monitor.service
+```
+
+Then, restart it with:
+
+```bash
+sudo systemctl start pi-monitor.service
+```
+
+### Manual Configuration
+
+If running manually, change the default port by passing it as a parameter:
+
+```bash
+python3 pi_monitor.py 8181
+```
 
 ## Compatibility
 
-This was tested on Raspberry Pi OS (32 bit), kernel 5.4.51-v7+
+Pi Monitor has been tested on Raspberry Pi OS (32-bit) with kernel version 5.4.51-v7+.
