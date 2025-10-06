@@ -9,22 +9,49 @@ import psutil
 class Monitor:
 
     def get_soc_temperature(self):
-        try:
-            temp = subprocess.check_output(
-                ["vcgencmd", "measure_temp"]).decode("utf8")
-            return float(re.findall(r'\d+\.\d+', temp)[0])
-        except Exception as e:
-            print(f"Error reading SoC temperature: {e}")
-            return None
+        """Get SoC temperature using multiple fallback methods"""
+        
+        # Method 1: Try vcgencmd (if available)
+        vcgencmd_paths = [
+            "vcgencmd",
+            "/usr/bin/vcgencmd",
+            "/opt/vc/bin/vcgencmd"
+        ]
+        
+        for cmd_path in vcgencmd_paths:
+            try:
+                result = subprocess.run(
+                    [cmd_path, "measure_temp"],
+                    capture_output=True,
+                    text=True,
+                    timeout=2
+                )
+                if result.returncode == 0:
+                    temp_match = re.findall(r'\d+\.\d+', result.stdout)
+                    if temp_match:
+                        return float(temp_match[0])
+            except:
+                continue
+        
+        # Method 2: Read from thermal zone (more reliable on modern systems)
+        thermal_zones = [
+            "/sys/class/thermal/thermal_zone0/temp",
+            "/sys/devices/virtual/thermal/thermal_zone0/temp"
+        ]
+        
+        for zone_path in thermal_zones:
+            try:
+                with open(zone_path, "r") as f:
+                    temp = float(f.read().strip()) / 1000.0
+                    return temp
+            except:
+                continue
+        
+        print("Error: Could not read SoC temperature from any source")
+        return None
 
     def get_gpu_temperature(self):
-        try:
-            temp = subprocess.check_output(
-                ["vcgencmd", "measure_temp"]).decode("utf8")
-            return float(re.findall(r'\d+\.\d+', temp)[0])
-        except Exception as e:
-            print(f"Error reading GPU temperature: {e}")
-            return None
+        return self.get_soc_temperature()
 
     def get_uptime(self):
         try:
@@ -68,7 +95,9 @@ class Monitor:
             return {
                 "total_memory": total_memory,
                 "free_memory": free_memory,
-                "available_memory": available_memory
+                "available_memory": available_memory,
+                "used_memory": total_memory - available_memory,
+                "percent": round((total_memory - available_memory) / total_memory * 100, 2)
             }
         except Exception as e:
             print(f"Error reading memory usage: {e}")
@@ -119,32 +148,56 @@ class Monitor:
             "disk_usage": self.get_disk_usage(),
             "network_stats": self.get_network_stats()
         }
-        return json.dumps(data)
+        return json.dumps(data, indent=2)
 
 
 class MonitorServer(BaseHTTPRequestHandler):
 
+    def log_message(self, format, *args):
+        """Override to reduce console spam"""
+        return
+
     def set_response(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
     def do_GET(self):
-        self.set_response()
-        if self.path in ["/monitor.json", "/monitor"]:
+        if self.path in ["/monitor.json", "/monitor", "/"]:
+            self.set_response()
             response = Monitor().get_json().encode()
             self.wfile.write(response)
+            print(f"Served monitor data to {self.client_address[0]}")
+        else:
+            self.send_error(404, "Not Found")
 
 
 def run_server(port):
     server_address = ('', port)
     httpd = HTTPServer(server_address, MonitorServer)
-    print(f"Starting server on port {port}")
-    httpd.serve_forever()
+    print(f"Starting monitor server on port {port}")
+    print(f"Access the monitor at: http://localhost:{port}/monitor.json")
+    
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nShutting down server...")
+        httpd.shutdown()
 
 
 if __name__ == "__main__":
     port = 8088
     if len(sys.argv) > 1 and sys.argv[1].isdigit():
         port = int(sys.argv[1])
+    
+    # Test the monitor once before starting server
+    print("Testing monitor functions...")
+    m = Monitor()
+    temp = m.get_soc_temperature()
+    if temp:
+        print(f"✓ Temperature reading works: {temp}°C")
+    else:
+        print("⚠ Temperature reading failed")
+    
     run_server(port)
