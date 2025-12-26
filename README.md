@@ -42,6 +42,19 @@ The server exposes a single endpoint on the default port `8088`:
 
 ## Installation
 
+# Prerequisites
+
+Pi Monitor requires the psutil Python module. Install it using:
+
+```bash
+sudo apt update
+sudo apt install python3-psutil
+```
+or
+```bash
+pip3 install psutil
+```
+
 ### Automatic Installation
 
 To install Pi Monitor automatically, run the following command:
